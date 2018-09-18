@@ -1,0 +1,198 @@
+//------------------------------------------------
+//--- 010 Editor v8.0.1 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+local uint n, i;
+
+struct {
+  UCHAR Magic[4]; // signature
+  UINT DataSize;
+  UCHAR DAG[4];
+} HEADER <name="File Header">;
+
+typedef struct {
+  UINT DataSize;
+  UINT Type;
+  BYTE Length;
+  UCHAR MaterialName[Length];
+  struct {
+    INT Unknown;
+    INT Unknown;
+    INT Unknown;
+    FLOAT Unknown;
+    INT Unknown;
+    INT16 TextureIndex;
+    INT16 Unknown;
+    INT Unknown;
+    INT Unknown;
+    INT Unknown;
+    INT Unknown;
+    INT Unknown;
+    INT Unknown;
+    INT Unknown;
+    INT Unknown;
+    INT Unknown;
+    INT Unknown;
+     INT Unknown;
+    BYTE Length;
+    UCHAR LightMapName[Length];
+  } PROPERTIES;
+} MATERIAL <name=GetMatName>;
+
+typedef struct
+{
+  INT DataSize;
+  UINT Type;
+  INT DataSize;
+  UINT Type;
+  UINT Unknown;
+  UINT T;
+  UCHAR ObjectName[DataSize - 12];
+
+  INT DataSize;
+  UINT Type;
+  UCHAR U1[DataSize - 4];
+
+  if (Type == 3)
+  {
+    UINT DataSize;
+    UINT Type;  
+    UCHAR U[DataSize - 4]; 
+  }
+
+  INT DataSize;
+  UINT Type;
+
+  struct {
+    FLOAT X;
+    FLOAT Y;
+    FLOAT Z;
+
+    FLOAT X;
+    FLOAT Y;
+    FLOAT Z;
+
+    FLOAT X;
+    FLOAT Y;
+    FLOAT Z;
+
+    FLOAT X;
+    FLOAT Y;
+    FLOAT Z; 
+  } MATRIX;
+
+ // if (T == 3)
+ // {
+    INT DataSize;
+    UINT Type;
+    UINT Unknown;
+    UINT Unknown;
+
+    UINT16 Count;
+    struct {
+      FLOAT X;
+      FLOAT X;
+      FLOAT Z;
+    } VERTEX[Count];
+    UINT16 Count;
+    struct {
+      UINT16 I1;
+      UINT16 I2;
+      UINT16 I3;
+      UINT16 I1;
+      UINT16 I2;
+      UINT16 I3;
+    } VINDEXES[Count];
+    BYTE A;
+    if (A) 
+    { 
+      UINT16 CountA;
+      UINT16 CountB;
+      struct {
+        FLOAT X;
+        FLOAT X;
+      } TextureCoordinates[CountA];
+      struct {
+        UINT16 I1;
+        UINT16 I2;
+        UINT16 I3;
+      } TINDEXES[Count];
+    };
+
+    UINT Count;
+    BYTE C[Count];
+//  };
+
+} OBJECT <name=GetChunkName, optimize=false>;
+
+string GetChunkName(OBJECT & ob)
+{
+  return "Object: " + ob.ObjectName;
+}
+
+while (!FEof())
+{ 
+  FSkip(4);
+  n = ReadInt(FTell());
+  if (n == 0) break;
+  FSkip(-4);
+
+  if (n == 3) 
+    struct {
+      UINT DataSize;
+      UINT Type;
+      UINT16 TextureCount;
+      typedef struct {
+          BYTE Length;
+          UCHAR FileName[Length];
+      } FILE_NAME <optimize=false, name=GetTexName>;
+      typedef struct (uint arraysize) {
+        FILE_NAME Array[arraysize];
+      } FILE_NAME_ARRAY <optimize=false>;
+      FILE_NAME_ARRAY FileNames(TextureCount) <name="Texture List">;     
+    } TEXTURE <name="Textures">;
+
+  if (n == 2) 
+    MATERIAL Material;
+
+  if (n == 1)
+    struct {
+      INT DataSize;
+      UINT Type;
+      INT DataSize;
+      UINT Type;
+      UINT16 Unknown;
+      UINT16 Count;
+      UINT16 Unknown;
+      UINT16 Unknown;
+      INT DataSize;
+      UINT Type;
+
+      typedef struct (uint arraysize) {
+        OBJECT Array[arraysize];
+      } OBJECT_ARRAY <optimize=false>;
+      OBJECT_ARRAY Chunk(Count) <name="Objects">;        
+    } GEOMETRY;  
+}
+
+string GetTexName(FILE_NAME &fn)
+{
+  return "Texture: " + fn.FileName;
+}
+
+string GetMatName(MATERIAL &mt)
+{
+  if (exists(mt.MaterialName))
+    return "Material: " + mt.MaterialName;
+  else
+    return "Material";    
+}
