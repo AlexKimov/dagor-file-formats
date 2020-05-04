@@ -11,7 +11,17 @@
 //   History: 
 //------------------------------------------------
 
-local uint n, i;
+local uint n, i, k, n0;
+local float Size, Sz, cnt;
+
+uint getType()
+{
+  local uint type;
+  FSkip(4);
+  type = ReadInt(FTell());
+  FSkip(-4);
+  return type;
+}
 
 struct {
   UCHAR Magic[4]; // signature
@@ -22,8 +32,8 @@ struct {
 typedef struct {
   UINT DataSize;
   UINT Type;
-  BYTE Length;
-  UCHAR MaterialName[Length];
+  BYTE MNLength;
+  UCHAR MaterialName[MNLength];
   struct {
     INT Unknown;
     INT Unknown;
@@ -35,109 +45,20 @@ typedef struct {
     INT Unknown;
     INT Unknown;
     INT Unknown;
+    FLOAT Unknown;
+    FLOAT Unknown;
     INT Unknown;
     INT Unknown;
     INT Unknown;
     INT Unknown;
     INT Unknown;
     INT Unknown;
-    INT Unknown;
-     INT Unknown;
     BYTE Length;
     UCHAR LightMapName[Length];
   } PROPERTIES;
+  UBYTE U[DataSize - (MNLength + PROPERTIES.Length + 74)];
 } MATERIAL <name=GetMatName>;
 
-typedef struct
-{
-  INT DataSize;
-  UINT Type;
-  INT DataSize;
-  UINT Type;
-  UINT Unknown;
-  UINT T;
-  UCHAR ObjectName[DataSize - 12];
-
-  INT DataSize;
-  UINT Type;
-  UCHAR U1[DataSize - 4];
-
-  if (Type == 3)
-  {
-    UINT DataSize;
-    UINT Type;  
-    UCHAR U[DataSize - 4]; 
-  }
-
-  INT DataSize;
-  UINT Type;
-
-  struct {
-    FLOAT X;
-    FLOAT Y;
-    FLOAT Z;
-
-    FLOAT X;
-    FLOAT Y;
-    FLOAT Z;
-
-    FLOAT X;
-    FLOAT Y;
-    FLOAT Z;
-
-    FLOAT X;
-    FLOAT Y;
-    FLOAT Z; 
-  } MATRIX;
-
- // if (T == 3)
- // {
-    INT DataSize;
-    UINT Type;
-    UINT Unknown;
-    UINT Unknown;
-
-    UINT16 Count;
-    struct {
-      FLOAT X;
-      FLOAT X;
-      FLOAT Z;
-    } VERTEX[Count];
-    UINT16 Count;
-    struct {
-      UINT16 I1;
-      UINT16 I2;
-      UINT16 I3;
-      UINT16 I1;
-      UINT16 I2;
-      UINT16 I3;
-    } VINDEXES[Count];
-    BYTE A;
-    if (A) 
-    { 
-      UINT16 CountA;
-      UINT16 CountB;
-      struct {
-        FLOAT X;
-        FLOAT X;
-      } TextureCoordinates[CountA];
-      struct {
-        UINT16 I1;
-        UINT16 I2;
-        UINT16 I3;
-      } TINDEXES[Count];
-    };
-
-    UINT Count;
-    BYTE C[Count];
-//  };
-
-} OBJECT <name=GetChunkName, optimize=false>;
-
-string GetChunkName(OBJECT & ob)
-{
-  return "Object: " + ob.ObjectName;
-}
 
 while (!FEof())
 { 
@@ -145,6 +66,28 @@ while (!FEof())
   n = ReadInt(FTell());
   if (n == 0) break;
   FSkip(-4);
+
+  if (n == 4) 
+    struct {
+      UINT DataSize;
+      UINT Type;
+      UINT16 Count;
+      typedef struct {
+          BYTE Length;
+          UCHAR FileName[Length];
+      } NAME <optimize=false, name=GetTexName>;
+      typedef struct (uint arraysize) {
+        NAME Array[arraysize];
+      } NAME_ARRAY <optimize=false>;
+      NAME_ARRAY FileNames(Count) <name="State Names">;     
+
+      UINT DataSize;
+      UINT Type;
+      struct {  
+        UINT16 Index;
+        UINT Pos;
+      } A[Count];
+    } STATE_LIST <name="States">;
 
   if (n == 3) 
     struct {
@@ -166,23 +109,133 @@ while (!FEof())
 
   if (n == 1)
     struct {
-      INT DataSize;
-      UINT Type;
-      INT DataSize;
-      UINT Type;
-      UINT16 Unknown;
-      UINT16 Count;
-      UINT16 Unknown;
-      UINT16 Unknown;
-      INT DataSize;
-      UINT Type;
+        while (!FEof()) {  
+            INT DataSize;
+            UINT Type;
+        
+            switch (Type) {
+              case 7:
+                break;
+        
+              case 5:
+                  struct {
+                    BYTE Data[DataSize - 4];
+                  } DATA_5;
+                break;
+        
+              case 4:
+                  struct {
+                    UINT Size;
+        
+                    if (Size == 38) {
+                      UINT16 VertexCount;
+                      struct {
+                        FLOAT X;
+                        FLOAT X;
+                        FLOAT Z;
+                      } VERTEX[VertexCount];             
+                    } else {
+                      UINT Index; 
+        
+                      UINT16 VertexCount;
+                      struct {
+                        FLOAT X;
+                        FLOAT X;
+                        FLOAT Z;
+                      } VERTEX[VertexCount];
+        
+                      UINT16 CountA;
+                      struct {
+                        UINT16 I1;
+                        UINT16 I3;
+                        UINT16 I2;
+                        UINT16 I1;
+                        UINT16 I3;
+                        UINT16 I2;
+                      } INDEXES[CountA]; 
+        
+                      BYTE A;
+                      if (A) {
+                        UINT16 Count;
+                        UINT16 Unknown;
 
-      typedef struct (uint arraysize) {
-        OBJECT Array[arraysize];
-      } OBJECT_ARRAY <optimize=false>;
-      OBJECT_ARRAY Chunk(Count) <name="Objects">;        
+                        if (A == 9) {
+                          struct {
+                            FLOAT X;
+                            FLOAT X;
+                            FLOAT X;
+                          } UNO[Count];                          
+                        } else {
+                        struct {
+                          FLOAT X;
+                          FLOAT X;
+                        } UV[Count];
+                       }
+        
+                       struct {
+                          UINT16 I1;
+                          UINT16 I2;
+                          UINT16 I2;
+                        } N[CountA];
+                      };
+        
+                      UINT Count;
+                      BYTE U[Count];
+                    };
+                  } DATA_4;        
+                break;
+        
+              case 3:
+                  struct {
+                    if (DataSize > 8) {
+                      UCHAR ObjectName[DataSize - 4]; 
+                    };            
+                  } DATA_3;
+                break;
+        
+              case 2:
+                  struct {
+                    INT16 Index;
+                    INT16 Count;
+                    INT16 Index;
+                    INT16 Index;
+                    if (DataSize > 12) {
+                      UCHAR ObjectName[DataSize - 12]; 
+                    };
+                  } DATA_2;
+                break;
+        
+              case 1:
+                if (DataSize == 52)
+                {
+                  struct {
+                    FLOAT X;
+                    FLOAT Y;
+                    FLOAT Z;
+             
+                    FLOAT X;
+                    FLOAT Y;
+                    FLOAT Z;
+            
+                    FLOAT X;
+                    FLOAT Y;
+                    FLOAT Z;
+            
+                    FLOAT PosX;
+                    FLOAT PosY;
+                    FLOAT PosZ; 
+                  } MATRIX;   
+                }
+                break;
+            };
+        };   
     } GEOMETRY;  
 }
+
+//string GetObjName(OBJECT &obj)
+//{
+//  return "Object: " + obj.ObjectName;
+//}
 
 string GetTexName(FILE_NAME &fn)
 {
