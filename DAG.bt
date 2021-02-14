@@ -11,7 +11,7 @@
 //   History: 
 //------------------------------------------------
 
-local uint n, i, k;
+local uint n, i, k, n0;
 local float Size, Sz, cnt;
 
 uint getType()
@@ -45,7 +45,8 @@ typedef struct {
     INT Unknown;
     INT Unknown;
     INT Unknown;
-    INT Unknown;
+    FLOAT Unknown;
+    FLOAT Unknown;
     INT Unknown;
     INT Unknown;
     INT Unknown;
@@ -58,7 +59,6 @@ typedef struct {
   } PROPERTIES;
   UBYTE U[DataSize - (MNLength + PROPERTIES.Length + 74)];
 } MATERIAL <name=GetMatName>;
-
 
 void ObjLOD(uint objcnt)
 {
@@ -385,27 +385,133 @@ while (!FEof())
 
   if (n == 1)
     struct {
-      struct {
-        INT DataSize;
-        UINT Type;
-        INT DataSize;
-        UINT Type;
-        UINT16 Unknown;
-        UINT16 Count;
-        UINT16 Unknown;
-        UINT16 Unknown;
-        INT DataSize;
-        UINT Type;
-      } HEADER;
+        while (!FEof()) {  
+            INT DataSize;
+            UINT Type;
+        
+            switch (Type) {
+              case 7:
+                break;
+        
+              case 5:
+                  struct {
+                    BYTE Data[DataSize - 4];
+                  } DATA_5;
+                break;
+        
+              case 4:
+                  struct {
+                    UINT Size;
+        
+                    if (Size == 38) {
+                      UINT16 VertexCount;
+                      struct {
+                        FLOAT X;
+                        FLOAT X;
+                        FLOAT Z;
+                      } VERTEX[VertexCount];             
+                    } else {
+                      UINT Index; 
+        
+                      UINT16 VertexCount;
+                      struct {
+                        FLOAT X;
+                        FLOAT X;
+                        FLOAT Z;
+                      } VERTEX[VertexCount];
+        
+                      UINT16 CountA;
+                      struct {
+                        UINT16 I1;
+                        UINT16 I3;
+                        UINT16 I2;
+                        UINT16 I1;
+                        UINT16 I3;
+                        UINT16 I2;
+                      } INDEXES[CountA]; 
+        
+                      BYTE A;
+                      if (A) {
+                        UINT16 Count;
+                        UINT16 Unknown;
 
-      ObjLOD(HEADER.Count);       
+                        if (A == 9) {
+                          struct {
+                            FLOAT X;
+                            FLOAT X;
+                            FLOAT X;
+                          } UNO[Count];                          
+                        } else {
+                        struct {
+                          FLOAT X;
+                          FLOAT X;
+                        } UV[Count];
+                       }
+        
+                       struct {
+                          UINT16 I1;
+                          UINT16 I2;
+                          UINT16 I2;
+                        } N[CountA];
+                      };
+        
+                      UINT Count;
+                      BYTE U[Count];
+                    };
+                  } DATA_4;        
+                break;
+        
+              case 3:
+                  struct {
+                    if (DataSize > 8) {
+                      UCHAR ObjectName[DataSize - 4]; 
+                    };            
+                  } DATA_3;
+                break;
+        
+              case 2:
+                  struct {
+                    INT16 Index;
+                    INT16 Count;
+                    INT16 Index;
+                    INT16 Index;
+                    if (DataSize > 12) {
+                      UCHAR ObjectName[DataSize - 12]; 
+                    };
+                  } DATA_2;
+                break;
+        
+              case 1:
+                if (DataSize == 52)
+                {
+                  struct {
+                    FLOAT X;
+                    FLOAT Y;
+                    FLOAT Z;
+             
+                    FLOAT X;
+                    FLOAT Y;
+                    FLOAT Z;
+            
+                    FLOAT X;
+                    FLOAT Y;
+                    FLOAT Z;
+            
+                    FLOAT PosX;
+                    FLOAT PosY;
+                    FLOAT PosZ; 
+                  } MATRIX;   
+                }
+                break;
+            };
+        };   
     } GEOMETRY;  
 }
 
-string GetObjName(OBJECT &obj)
-{
-  return "Object: " + obj.ObjectName;
-}
+//string GetObjName(OBJECT &obj)
+//{
+//  return "Object: " + obj.ObjectName;
+//}
 
 string GetTexName(FILE_NAME &fn)
 {
