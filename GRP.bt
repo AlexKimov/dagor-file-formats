@@ -1,0 +1,183 @@
+//------------------------------------------------
+//--- 010 Editor v8.0.1 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+typedef struct {     
+  FLOAT x;
+  FLOAT y;
+  FLOAT z;
+} VECTOR_3F;
+
+char Magic[4];
+UINT ModelCount;
+
+struct {
+  struct {
+    UINT Unknown;
+    UBYTE Length;
+    char Name[Length];
+    UINT Offset;
+  } DATA[ModelCount] <optimize=false>;
+} OBJECTS_DATA;
+
+struct {
+  UINT CountA;
+  struct {
+    UBYTE Length;
+    char Name1[Length];
+    UINT Unknown;
+    UBYTE Length;
+    char Name2[Length];
+
+    UINT SectionSize;
+    UINT Count;
+    if (Count > 0) {
+      UBYTE Length;
+      char Name4[Length];
+      struct {
+        struct {
+          UBYTE Length;
+          char Name21[Length];
+        } A[Count - 1] <optimize=false>;
+      } B;
+    };
+  } D[CountA] <optimize=false>;
+} D1;
+
+struct {
+  char ChunkID[8];
+  UINT Unknown;
+  BYTE A[3];
+  UINT Count;
+  struct {
+    UBYTE Length;
+    char Name1[Length];  
+    FLOAT M[16];
+    INT E[17];
+    INT16 R;
+    UINT CountA;
+    BYTE A[CountA];
+    UINT CountB;
+    UINT CountC;
+
+    struct {
+      FLOAT M1;
+    } U[CountB];
+    struct {
+      FLOAT P[9];
+    } Y[CountC];
+
+    FLOAT TE[5];
+    UINT CountD;
+    struct {
+      FLOAT P[6];
+    } YE[CountD];    
+    FLOAT TI[5];
+  } TY[Count] <optimize=false>;
+
+  UINT MeshCount;
+
+  struct {
+    UINT Size;
+    BYTE Data[Size];
+    UINT IndexCount;
+    UINT16 Indexes[IndexCount];
+    UINT Count;
+    UINT Count; 
+    UINT Count;
+    UINT Count; 
+    UINT CountQ;
+    struct {
+      UINT16 Count;
+      UINT16 CountY;
+      UINT Count;
+      UINT Count;
+    } P[CountQ];  
+  } MESH[MeshCount] <optimize=false>;
+
+  UINT Count;
+  struct {
+    UINT16 Length;
+    char Name1[Length]; 
+  } Y[Count] <optimize=false>; 
+
+  UINT Count; 
+  struct {
+    UINT16 Length;
+    char Name1[Length]; 
+  } Y4[Count] <optimize=false>; 
+
+  UINT Count;
+  UINT CountE;
+
+  struct {
+    UINT Size;
+    UINT16 Un;
+    CHAR T[6];
+    UINT R;
+    UINT16 Un;
+
+    UINT16 CountO1;
+    struct {
+    UINT16 CountO2;
+      UINT Size;
+      CHAR T0[4];
+      UINT Count;
+      UINT Count;
+      UINT Count;
+      UINT Count;
+      UINT Count;
+      UINT Count;
+      UINT Count;
+      UINT Count;
+      UINT Count;
+    } E[CountO1];
+    UINT CountE;
+    UINT16 CountE;
+  } I[CountE] <optimize=false>;
+
+  char IE[8];
+  UINT Size; 
+  UINT Count;
+  struct {
+    UINT16 Length;
+    char Name[Length]; 
+  } QW[Count] <optimize=false>;
+
+  UINT Count;
+  struct {
+    UINT16 Length;
+    char Name[Length]; 
+  } WW[Count] <optimize=false>;
+
+    UINT Count;
+    UINT Count; 
+    UINT16 Count;
+    UINT Count; 
+    UINT Count;
+    UINT Count; 
+    UINT Count;
+    UINT Count; 
+    BYTE Count;
+    UINT Count; 
+    UINT Count;
+    UINT Count;  
+    UINT Count;
+    UINT Count;
+    UINT Count;
+    UINT Count;
+    UINT Count; 
+    UINT Count;
+    UINT Count;
+    UINT Count;
+    UINT Count;
+} R[ModelCount] <optimize=false>;
