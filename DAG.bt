@@ -11,8 +11,25 @@
 //   History: 
 //------------------------------------------------
 
-local uint n, i, k, n0, io, childNumber, isObjStarted, sectionType;
+local uint n, k, n0, io, childNumber, isObjStarted, sectionType, pos;
 local float Size, Sz, cnt;
+
+typedef struct {
+  FLOAT X;
+  FLOAT Y;
+  FLOAT Z;
+}  VECTOR_3F;
+
+typedef struct {
+  FLOAT X;
+  FLOAT Y;
+}  VECTOR_2F;
+
+typedef struct {
+  UINT16 X;
+  UINT16 Y;
+  UINT16 Z;
+}  VECTOR_3UI;
 
 uint getType()
 {
@@ -21,6 +38,13 @@ uint getType()
   type = ReadInt(FTell());
   FSkip(-4);
   return type;
+}
+
+uint getSize()
+{
+  local uint size;
+  size = ReadInt(FTell());
+  return size;
 }
 
 struct {
@@ -73,49 +97,29 @@ typedef enum <uint> {
 } OBJECT_SECTION_TYPE;
 
 // tree from child objects
-uint readObject_() {
-  // 1
-  INT DataSize;
-  UINT Type;
-
+uint readObject() {
   struct {
-    // 2
-    struct {
-      INT DataSize;
-      UINT Type; //
-   
-      INT16 Index <name="Object index">;
-      INT16 ChildCount <name="Number of child objects">;
-      INT16 Type;
-      INT16 Unknown;
+    INT DataSize;
+    UINT Type;
 
-      if (DataSize > 12) {
-        UCHAR ObjectName[DataSize - 12]; 
-      };  
-    } OBJECT_HEADER;
-
-    //
-    if (getType() != 7) {
-        if (getType() == 3) 
-            struct {
-              INT DataSize;
-              UINT Type;
-              if (DataSize > 8) {
-                UCHAR MeshName[DataSize - 4]; 
-              };            
-            } OBJECT_PROPERTIES;  
-
-        struct {
+    local uint faceCount;
+    while (!FEof())
+    {
+      switch (getType())
+      {
+        case 0:
+          struct {
+            INT DataSize;
+            UINT Type; //  
+          
+          } EMPTY;
+          break;     
+        case 1:
+          if (getSize() != 52) return 0;
           INT DataSize;
-          UINT Type;
-          BYTE Data[DataSize - 4];
-        } DATA_5;      
-
-        struct {
-          INT DataSize;
-          UINT Type;
+          UINT Type; //
           if (DataSize == 52)
-              struct {
+            struct {
                 FLOAT X;
                 FLOAT Y;
                 FLOAT Z;
@@ -131,269 +135,193 @@ uint readObject_() {
                 FLOAT PosX;
                 FLOAT PosY;
                 FLOAT PosZ; 
-              } MATRIX;   
-        } MATRIX; 
+              } MATRIX;
+        
 
-        if (getType() == 8)      
+          break;
+        case 2: 
           struct {
             INT DataSize;
-            UINT Type;          
-            BYTE Unknown_[DataSize - 4];
-          } DATA_8;
+            UINT Type; //
+   
+            INT16 Index <name="Object index">;
+            INT16 ChildCount <name="Number of child objects">;
+            INT16 Type0;
+            INT16 Unknown;
 
-        if (getType() == 1) {
-          return 0;
-        };
+            if (DataSize > 12)
+              UCHAR ObjectName[DataSize - 12]; 
 
-        if (getType() != 6)
-        struct {
-            INT DataSize;
-            UINT Type;
-
-            UINT Size;
-
-            if (Size == 38) {
-              UINT16 Count; 
-              UINT16 UN;
-
-              struct {
-                FLOAT X;
-                FLOAT X;
-                FLOAT Z;
-                FLOAT X;
-                FLOAT Z;
-              } D;
-
-              BYTE Count;
-              BYTE Count;
-            
-              struct {
-                FLOAT X;
-                FLOAT Y;
-                FLOAT Z;
-              } UNK[Count];
-              break;
-            };
-      
-            UINT Unknkown; 
-
-            UINT16 VertexCount;
+          } OBJECT_HEADER;
+          break;
+        case 3:
             struct {
-              FLOAT X;
-              FLOAT Y;
-              FLOAT Z;
-            } VERTEX[VertexCount];
-
-            UINT16 FaceCount;
-            struct {
-              UINT16 I1;
-              UINT16 I3;
-              UINT16 I2;
-              UINT16 Unknown;
-              UINT16 Unknown;
-              UINT16 Unknown;
-            } FACE_INDEXES[FaceCount]; 
-
-            BYTE count;
-            struct {
-                UINT16 UVCount;
-                BYTE CountAA;
-                BYTE Unknown;
-
-                struct {
-                  FLOAT X[CountAA];
-                } UV[UVCount];   
-
-                struct {
-                  UINT16 I1;
-                  UINT16 I2;
-                  UINT16 I2;
-                } UV_INDEXES[FaceCount];                     
-            } TEXTURE_DATA[count] <optimize=false>;
-        } OBJECT_MESH_DATA;   
-
-        struct {
-          INT DataSize;
-          UINT Type;
-          BYTE Unknown_[DataSize - 4];
-        } DATA_6;  
-
-        if (getType() == 4) {
+              INT DataSize;
+              UINT Type; //
+              CHAR Str[DataSize - 4]; 
+            } EA;
+          break;
+        case 4:
           struct {
+
             INT DataSize;
             UINT Type; 
-            BYTE Data[DataSize - 4];
-          } UNKNOWN;         
-        };         
-    } 
 
-    // 7
-    if (OBJECT_HEADER.ChildCount) {
-      struct {
-        INT DataSize;
-        UINT Type; // 7
-        for (i = 0; i < OBJECT_HEADER.ChildCount; ++i)
-           readObject_();  
-      } CHILD_OBJECTS;
-    }
+            if (exists(parentof(this).UE))
+            {  
+              UINT16 Count2;
 
-  } OBJECT_DATA;
+              struct {
+                UINT16 Index;       
+                FLOAT R[12];
+              } I[Count2];
+
+              UINT Count3;
+
+              struct {
+                FLOAT T[Count2]; 
+              } S[Count3];
+            }
+            else
+            {
+              INT DataSize1;
+              UINT Type; 
+
+              if (Type == 3)
+              {
+                FLOAT TY[5];
+                UINT16 KK;
+                FLOAT TY2[3]; 
+                // kjhkljh();
+              }
+              else
+              {
+
+              UINT16 VertexCount;
+
+              VECTOR_3F VertexCoordinates[VertexCount];
+
+              UINT16 FaceCount;
+              if (Type == 2) 
+              {
+               UINT16 FaceCount;
+               UINT16 Un;               
+              }
+          
+              faceCount = FaceCount;
+
+              struct {
+                if (Type == 1)
+                {
+                  UINT16 Index1;
+                  UINT16 Index2;
+                  UINT16 Index3;
+                  UINT16 Un;
+                  UINT16 Un;
+                  UINT16 Un;  
+               } else if (Type == 2)
+               {
+                  UINT16 Index1;
+                  UINT16 Un;
+                  UINT16 Index2;
+                  UINT16 Un;
+                  UINT16 Index3;
+                  UINT16 Un;
+
+                  UINT16 Un;  
+                  UINT16 Un;
+                  UINT16 Un;
+               }
+              } Facent[FaceCount];  
+
+              if (Type == 1)
+              {
+                UBYTE Count8;
+                struct {
+                  UINT16 Count0;
+                  UINT16 Count;
+
+                  VECTOR_2F TexCoordinates[Count0];     
+                  VECTOR_3UI Indexes[FaceCount];   
+                
+                } YU[Count8];
+
+                if (!Count8) 
+                {   
+                  UINT A;
+                  UBYTE R[A];
+                }
+              } else 
+              {
+                BYTE Count00;
+                struct {
+                  UINT Count3;
+           
+                  BYTE Count001;
+                  BYTE Count002;
+                  struct {
+                    FLOAT XYZ[Count001];                
+                  } TY[Count3];
+              
+                  struct {
+                    UINT Indexes[3];                
+                  } TY2[FaceCount];  
+                             
+                } wqr[Count00] <optimize=false>;  
+ 
+                UINT Count; 
+                BYTE R[Count];
+              //dfhdfh();         
+              }
+              }
+            }
+          } MESH_DATA; 
+
+                         
+          break;
+        case 5:
+          struct {
+            INT DataSize;
+            UINT Type;
+            BYTE DAta[DataSize - 4]; 
+          } UN;
+          break;
+        case 6:
+          if (faceCount == 0)
+          {
+              UINT DataSize;           
+              UINT Type;  
+              BYTE Data[DataSize - 4];  
+          }       
+          else
+            struct {
+              UINT DataSize;           
+              UINT Type; 
+              UBYTE Indexes1[faceCount]; 
+            } UE;
+          break;
+        case 7:
+          if (OBJECT_HEADER.ChildCount > 0) 
+          {
+            struct {
+              INT DataSize;
+              UINT Type; // 7
+
+              local uint i; 
+              for (i = 0; i < OBJECT_HEADER.ChildCount; i++)
+              struct {
+                readObject();
+              } ONE_HELL_OF_AN_OBJECT;  
+            } CHILD_OBJECTS;
+          }
+          break;
+      };
+    };
+
+  } OBJECT;
   
   return 0;
 };
-
-
-// tree with infinite loop, failes while parsing bone structures
-uint readObject(uint objCount) {
-  struct { 
-   while (true) { 
-      INT DataSize;
-      UINT Type;
-
-      switch (Type) {
-        case 8:
-            struct {
-              BYTE Unknown_[DataSize - 4];
-            } DATA_8;
-          break;
-
-        case 7:
-            isObjStarted = 0;
-            readObject(childNumber);
-            return 0; 
-          break;
-
-        case 6:
-            struct {
-              BYTE Unknown_[DataSize - 4];
-            } DATA_6;
-          break;  
-
-        case 5:
-            struct {
-              BYTE Data[DataSize - 4];
-            } DATA_5;
-          break;
-
-        case 4:
-            struct {
-                UINT Size;
-
-                if (Size == 38) {
-                  UINT16 Count; 
-                  UINT16 UN;
-
-                  struct {
-                    FLOAT X;
-                    FLOAT X;
-                    FLOAT Z;
-                    FLOAT X;
-                    FLOAT Z;
-                  } D;
-
-                  BYTE Count;
-                  BYTE Count;
-                
-                  struct {
-                    FLOAT X;
-                    FLOAT Y;
-                    FLOAT Z;
-                  } UNK[Count];
-                  break;
-                };
-          
-                UINT Unknkown; 
- 
-                UINT16 VertexCount;
-                struct {
-                  FLOAT X;
-                  FLOAT Y;
-                  FLOAT Z;
-                } VERTEX[VertexCount];
-
-                UINT16 FaceCount;
-                struct {
-                  UINT16 I1;
-                  UINT16 I3;
-                  UINT16 I2;
-                  UINT16 Unknown;
-                  UINT16 Unknown;
-                  UINT16 Unknown;
-                } FACE_INDEXES[FaceCount]; 
-
-                BYTE count;
-                struct {
-                    UINT16 UVCount;
-                    BYTE CountAA;
-                    BYTE Unknown;
-
-                    struct {
-                      FLOAT X[CountAA];
-                    } UV[UVCount];   
-
-                    struct {
-                      UINT16 I1;
-                      UINT16 I2;
-                      UINT16 I2;
-                    } UV_INDEXES[FaceCount];                     
-                } TEXTURE_DATA[count] <optimize=false>;
-
-            } OBJECT_MESH_DATA;       
-          break;
- 
-        case 3:
-            struct {
-              if (DataSize > 8) {
-                UCHAR MeshName[DataSize - 4]; 
-              };            
-            } OBJECT_PROPERTIES;
-          break;
-
-        case 2:
-            struct {
-              INT16 Index <name="Object index">;
-              INT16 Count <name="Number of child objects">;
-              childNumber = Count;
-              INT16 Type;
-              sectionType = Type;
-              INT16 Unknown;
-              if (DataSize > 12) {
-                UCHAR ObjectName[DataSize - 12]; 
-              };
-            } OBJECT_HEADER;
-          break;
-
-        case 1:
-            if (DataSize == 52)
-            {
-              struct {
-                FLOAT X;
-                FLOAT Y;
-                FLOAT Z;
-     
-                FLOAT X;
-                FLOAT Y;
-                FLOAT Z;
-    
-                FLOAT X;
-                FLOAT Y;
-                FLOAT Z;
-    
-                FLOAT PosX;
-                FLOAT PosY;
-                FLOAT PosZ; 
-              } MATRIX;   
-            } else {
-            } 
-          break;
-        case 0:
-          return 0;  
-      };
-    };
-  } GEOMETRY_OBJECTS;
-
-  return 0;  
-} 
 
 while (!FEof())
 { 
@@ -444,14 +372,12 @@ while (!FEof())
 
   if (n == 1) {
     struct {
-      readObject_();
+      readObject();
     } GEOMETRY;
     break;
   };
     
 }
-
-Printf("%d", io);
 
 //string GetObjName(OBJECT &obj)
 //{
