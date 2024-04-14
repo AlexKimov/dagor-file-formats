@@ -1,0 +1,138 @@
+//------------------------------------------------
+//--- 010 Editor v8.0.1 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+CHAR Magic[4];
+
+UINT Count;
+UINT CountA;
+
+struct {
+  UINT Count;
+  UINT Count;
+  INT Count;
+  struct {
+    FLOAT X;
+    FLOAT X;
+    FLOAT Y;
+    FLOAT Z;
+
+    FLOAT X;
+    FLOAT Y;
+    FLOAT Z;
+
+    FLOAT X;
+    FLOAT Y;
+    FLOAT Z;
+
+    FLOAT X;
+    FLOAT Y;
+    FLOAT Z;
+
+    FLOAT X;
+    FLOAT Y;
+    FLOAT Z;
+
+    FLOAT X;
+    FLOAT Y;
+    FLOAT Z;
+
+    FLOAT X;
+    FLOAT Y;
+    FLOAT Z;
+
+    FLOAT X;
+    FLOAT Y;
+  } MATRIX;
+  INT Count;
+} Q[CountA];
+
+struct {
+  string A;
+} NAMES[CountA] <optimize=false>;
+
+FLOAT A;
+CHAR B[4];
+
+UINT Count;
+
+struct {
+  UBYTE Length;
+  char D[Length];
+} EQ[Count] <optimize=false>;
+
+UINT Count;
+struct {
+  UBYTE Length;
+  char D[Length];
+  FLOAT QOP[18];
+  INT QP[15];
+  UINT A;
+  BYTE P;
+  UINT K;
+  UINT Q;
+  if (Q == 6)
+    FLOAT QOWP[24];
+  else
+    FLOAT QOWP[16]; 
+} MATERIAL[Count] <optimize=false>;
+
+UINT Count;
+
+struct {
+  UINT Size;
+
+  struct {
+    FLOAT V[Size/4];
+  } COORDINATES;
+
+  UINT Count;
+  struct {
+    UINT16 Index[Count];
+  } INDEXES;
+
+  UINT Count;
+  UINT Count;
+  UINT Count;
+  UINT Count;
+  UINT CountW;
+
+  struct {
+    UINT16 Count;
+    UINT16 Count;
+    UINT16 Count;
+    UINT16 Count;
+    UINT Count; 
+  } YUI[CountW];
+} MESH[Count] <optimize=false>;
+
+UINT Count;
+
+struct {
+  UINT16 Length;
+  char Name[Length];
+} U[Count] <optimize=false>;
+
+UINT Count;
+struct {
+  UINT16 Length;
+  char Name[Length];
+} U2[Count] <optimize=false>;
+
+  UINT Count;
+  UINT Count;
+  UINT Size;
+  UINT16 A;
+
+  char Name[6];
+  UINT Count;
+  UINT Count;

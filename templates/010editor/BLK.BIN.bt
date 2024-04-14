@@ -1,0 +1,72 @@
+//------------------------------------------------
+//--- 010 Editor v8.0.1 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+CHAR Magic[4];
+UINT A;
+UINT B;
+UINT Count;
+
+struct {
+  UINT16 Length;
+  char Name[Length];
+} NAMES[Count] <optimize=false>;
+
+UINT Count;
+struct {
+  UINT16 Length;
+  char Name[Length];
+} NAMES2[Count] <optimize=false>;
+
+UINT Count;
+UINT Count;
+UINT Count;
+UINT Count;
+UINT Count;
+UINT Count;
+UINT Count;
+UINT Count;
+UINT16 CountQ;
+UINT Count;
+UINT16 Count;
+UINT Count;
+UINT16 Count;
+UBYTE Q;
+UINT CountT;
+UINT Count;
+UBYTE Q;
+UINT Count;
+UINT Count;
+UINT Count;
+UBYTE Aer;
+UINT Count;
+
+UINT Count;
+
+while (!FEof())
+struct {
+  UINT Count;
+  UINT CountT;
+  UINT Index;
+
+  struct {
+    UBYTE A;
+    if (A == 1)
+      UINT NameIndex;
+    else if (A == 3)
+      FLOAT BF;
+    else if (A == 9)
+      UBYTE A;
+    UINT NameIndex;
+  } DF[CountT] <optimize=false>;
+} RTYY <optimize=false>;
+

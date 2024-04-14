@@ -1,0 +1,312 @@
+//------------------------------------------------
+//--- 010 Editor v8.0.1 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+enum FILE_TYPES { 
+  PNYD = 1862561510, 
+  BLK = 3229328162, 
+  RGBA32 = 3400314139
+}; 
+
+typedef struct {     
+  FLOAT x;
+  FLOAT y;
+  FLOAT z;
+} VECTOR_3F;
+
+char Magic[4];
+UINT ObjectCount;
+
+struct {
+  uint type;
+  ubyte length;
+  char name[length];
+  uint offset;
+} file_rec[ObjectCount] <optimize=false>;
+
+uint counta;
+struct {
+    ubyte length;
+    char name1[length];
+    uint type;
+    ubyte length;
+    char name2[length];
+
+    uint sectionsize;
+    uint count;
+    if (count > 0) {
+        struct {
+          ubyte length;
+          char name21[length];
+        } a[count] <optimize=false>;
+    };
+} texture[counta] <optimize=false>;
+
+
+struct PNYDLod {
+  char ChunkID[8];
+  UINT Unknown;
+  BYTE A[3];
+  UINT Count;
+  struct {
+    UBYTE Length;
+    char Name1[Length];  
+    FLOAT M[16];
+    INT E[17];
+    INT16 R;
+    UINT CountA;
+    BYTE A[CountA];
+    UINT CountB;
+    UINT CountC;
+
+    struct {
+      FLOAT M1;
+    } U[CountB];
+    struct {
+      FLOAT P[9];
+    } Y[CountC];
+
+    FLOAT TE[5];
+    UINT CountD;
+    struct {
+      FLOAT P[6];
+    } YE[CountD];    
+    FLOAT TI[5];
+  } TY[Count] <optimize=false>;
+
+  UINT MeshCount;
+
+  struct {
+    UINT Size;
+    local float s = Size;
+    byte vertexBuffer[s];
+
+    UINT IndexNum;
+    struct {
+       UINT16 i1;
+       UINT16 i2;
+       UINT16 i3;
+    } Index[IndexNum/3];
+
+    UINT vertexNum;
+    UINT faceNum; 
+    UINT vertexdataSize;
+    UINT textureIndex; 
+    UINT num0;
+    struct {
+      UINT16 Count;
+      UINT16 CountY;
+      UINT num1;
+      UINT num2;
+    } P[num0] <optimize=false>;  
+  } MESH[MeshCount] <optimize=false>;
+
+  UINT Count;
+  struct {
+    UINT16 Length;
+    char Name1[Length]; 
+  } Y[Count] <optimize=false>; 
+
+  UINT texNum; 
+  struct {
+    UINT16 Length;
+    char Name1[Length]; 
+  } TEXTURE[texNum] <optimize=false>; 
+
+  UINT Count;
+  UINT lodNum;
+
+  struct {
+    UINT Size;
+    UINT16 Un;
+    byte unk;
+    CHAR T[5];
+    UINT R;
+    UINT16 Un;
+
+    UINT16 meshNum;
+    struct {
+      UINT16 index;
+      UINT Size;
+      CHAR T0[4];
+      UINT Count;
+      UINT Count;
+      UINT Count;
+      UINT Count;
+      UINT Count;
+      UINT unk;
+      UINT vertexNum;
+      UINT unk;
+      UINT faceNum;
+    } MESH[meshNum];
+    UINT num1;
+    UINT16 num2;
+    struct {
+      uint16 a;
+      uint a;
+      uint a; 
+      uint a;
+    } a[num2];
+  } LOD[lodNum] <optimize=false>;
+};
+
+  typedef  struct {
+      uint index;
+      byte k;
+      if (k == 1)
+        uint a;
+      else if (k == 2)
+        uint a;
+      else if (k == 3)
+        float a;
+      else if (k == 4) {      
+        uint a;
+        float a;
+      } else if (k == 5) {
+        float a;
+        float a;
+        float a;
+      } else if (k == 9) {      
+        byte a;
+      } else if (k == 7) {      
+        uint a;
+        uint a;
+      } else if (k == 10) {      
+        uint a;
+        uint a;
+        uint a;
+        uint a;
+      } else if (k == 11) {      
+        float a;
+        float a;
+        float a;
+        float a;
+        float a;
+        float a;
+        float a;
+        float a;
+        float a;
+        float a;
+        float a;
+        float a;
+      }
+    } ty <optimize=false>;
+
+typedef struct {
+  local uint pos = FTell();
+  char IE[8];
+  UINT Size; 
+
+  UINT num;
+
+  struct {
+    UINT16 length;
+    char name[length];
+  } fn[num] <optimize=false>;
+
+  UINT num;
+  struct {
+    UINT16 length;
+    char name[length];
+  } fn2[num] <optimize=false>;
+
+  UINT sa; 
+  if (sa == 1) {
+    uint a;
+    byte k;
+    uint a;
+    if (k > 1)
+    struct {
+      uint unk;
+      uint16 unk;
+    } h[k];
+  }
+  else if (sa == 2) {
+    uint a;
+    byte a;
+    float b;
+    float a;
+    float b;
+    uint a;
+    uint b;
+    byte a;
+  }
+
+  pos = Size - (FTell() - pos) - 4;
+  while (pos) {
+    struct {
+      UINT unk; 
+      UINT index;
+      UINT num;
+      ty ttyy[num];
+    } y;
+    pos -= sizeof(y);
+  };
+
+  UINT num;
+} BLK;
+
+
+local uint i, w, h;
+for (i = 0; i < ObjectCount; ++i) {
+  FSeek(file_rec[i].offset);
+  struct {
+    switch (file_rec[i].type)
+    {
+      case 3229328162:
+      case 192944177:
+      case 2656033053:
+        BLK blk;
+        UINT type;
+      break;
+      case 1862561510:
+        PNYDLod pnydlod;
+        BLK blk;
+        UINT type;
+      break;
+      case 2682216699:
+        PNYDLod pnydlod;
+        BLK blk;
+        UINT type;
+      break;
+      case 3400314139:
+        uint16 width;
+        uint16 height;
+        w = width;
+        h = height;
+        byte data[w*h*4];
+        uint type;
+      break;
+      case 4197266612:
+        uint size;
+        uint unknown;
+        uint unknown;
+        uint unknown;
+        uint unknown;
+        uint unknown;
+        uint unknown;
+        uint unknown;
+        uint unknown;
+        uint unknown;
+        byte data[size - 9*4];
+      break;
+      case 237946728:
+        uint size;
+        uint width;
+        uint height; 
+        uint unk;
+        byte data[size - 4];
+        uint a;
+      break;
+    }
+  } file;
+}
